@@ -57,7 +57,7 @@ app.post("/tutors/add/submit", async (request, response) => {
 
     let newTutor = {"firstName": firstName, "lastName": lastName, "skills": skills, "platforms": platforms, "hourlyRate": hourlyRate};
     await addTutor(newTutor);
-    response.redirect("http://localhost:5173/tutorlist");
+    response.redirect("http://localhost:5173/admin/tutorlist");
 })
 
 //Delete a tutor
@@ -96,6 +96,15 @@ app.post("/tutors/edit/submit", async (request, response) => {
     response.redirect("http://localhost:5173/tutorlist");
 })
 
+//Search tutors by skill
+app.get("/tutors/search", async (request, response) => {
+    let skillsInput = request.query.skill_input; 
+    // console.log(skillsInput);
+    let tutors = await getTutorsBySkill(skillsInput);
+    console.log(tutors);
+    response.json(tutors);
+})
+
 
 //set up server listening
 app.listen(port, () => {
@@ -122,6 +131,13 @@ async function getAllTutors() {
     res = await results.toArray();
     // console.log(res);
     return res; //returns an array of all the tutors as json objects
+}
+
+async function getTutorsBySkill(skill){
+    db = await connection();
+    let results = db.collection("tutors").find({ skills: {$regex: new RegExp(skill, 'i')}});
+    res = await results.toArray();
+    return res;
 }
 
 async function addTutor(tutor) {
