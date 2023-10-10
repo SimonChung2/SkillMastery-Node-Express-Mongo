@@ -105,6 +105,16 @@ app.get("/tutors/search", async (request, response) => {
     response.json(tutors);
 })
 
+//View tutor profile
+app.get("/tutorprofilelearnerview", async (request, response) => {
+    
+        let tutorToView = await getSingleTutor(request.query.tutorId);
+        let tutors = await getAllTutors;
+
+        response.json(tutorToView);
+        // response.redirect("http://localhost:5173/edittutor");
+    })
+
 
 //set up server listening
 app.listen(port, () => {
