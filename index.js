@@ -45,7 +45,7 @@ app.get("/tutors/display", async (request, response) => {
 })
 
 //Route handling for other CRUD operations
-
+//TUTORS
 //Create a new tutor
 app.post("/tutors/add/submit", async (request, response) => {
 
@@ -109,7 +109,6 @@ app.get("/tutors/search", async (request, response) => {
 app.get("/tutorprofilelearnerview", async (request, response) => {
     
         let tutorToView = await getSingleTutor(request.query.tutorId);
-        let tutors = await getAllTutors;
 
         response.json(tutorToView);
         // response.redirect("http://localhost:5173/edittutor");
@@ -122,12 +121,27 @@ app.listen(port, () => {
 })
 
 
+//LEARNERS
+//Create a new learner
+
+app.post("/learners/add/submit", async (request, response) => {
+
+    let firstName =  request.body.firstName;
+    let lastName = request.body.lastName;
+    let email = request.body.email;
+
+    let newLearner = {"firstName": firstName, "lastName": lastName, "email": email};
+    await addLearner(newLearner);
+    response.redirect("http://localhost:5173/admin/tutorlist");
+})
+
 //Mongo Functions
 async function connection() {
     db = client.db("skillmasterydb");
     return db;
 }
 
+//TUTORS
 async function getDisplayedTutors(){
     db = await connection();
     let results = db.collection("tutors").find().sort({_id:-1}).limit(4); //sorts tutor objects from newest to oldest and gets the first 4
@@ -180,9 +194,17 @@ async function editTutor (filter, tutor) {
     await db.collection("tutors").updateOne(filter, updateTutor);
 }
 
+
+//LEARNERS
 async function getAllLearners() {
     db = await connection();
     let results = db.collection("learners").find({});
     res = await results.toArray();
     return res; //returns an array of all the learners as json objects
+}
+
+async function addLearner(learner) {
+    db = await connection();
+    var status = await db.collection("learners").insertOne(learner);
+    console.log("learner added");
 }
