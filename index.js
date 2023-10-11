@@ -57,7 +57,7 @@ app.post("/tutors/add/submit", async (request, response) => {
 
     let newTutor = {"firstName": firstName, "lastName": lastName, "skills": skills, "platforms": platforms, "hourlyRate": hourlyRate};
     await addTutor(newTutor);
-    response.redirect("http://localhost:5173/admin/tutorlist");
+    response.redirect(`http://localhost:5173/tutorprofiletutorview/${newTutor._id}`);
 })
 
 //Delete a tutor
@@ -67,7 +67,7 @@ app.get("/tutors/delete", async (request, response) => {
     // console.log(id);
     //calls the delete Tutor function while passing in the value of tutorId
     await deleteTutor(id);
-    response.redirect("http://localhost:5173/tutorlist");
+    response.redirect(`http://localhost:5173/tutorlist`);
 })
 
 //Edit a tutor
@@ -93,7 +93,8 @@ app.post("/tutors/edit/submit", async (request, response) => {
     };
 
     await editTutor (idFilter, tutor);
-    response.redirect("http://localhost:5173/tutorlist");
+
+    response.redirect(`http://localhost:5173/tutorprofiletutorview/${request.body.tutorId}`);
 })
 
 //Search tutors by skill
@@ -132,7 +133,49 @@ app.post("/learners/add/submit", async (request, response) => {
 
     let newLearner = {"firstName": firstName, "lastName": lastName, "email": email};
     await addLearner(newLearner);
-    response.redirect("http://localhost:5173/admin/tutorlist");
+    response.redirect(`http://localhost:5173/learnerprofilelearnerview/${newLearner._id}`);
+
+})
+
+//View learner profile
+app.get("/learnerprofilelearnerview", async (request, response) => {
+    
+    let learnerToView = await getSingleLearner(request.query.learnerId);
+
+    response.json(learnerToView);
+})
+
+//Delete a learner
+app.get("/learners/delete", async (request, response) => {
+    //get learnerId value and save to variable called id
+    let id = request.query.learnerId;
+    // console.log(id);
+    //calls the delete Learner function while passing in the value of learnerId
+    await deleteLearner(id);
+    response.redirect(`http://localhost:5173/admin/learnerlist`);
+})
+
+//Edit a learner
+app.get("/learners/edit", async (request, response) => {
+    if (request.query.learnerId) {
+        let learnerToEdit = await getSingleLearner(request.query.learnerId);
+
+        response.json(learnerToEdit);
+    }
+})
+
+app.post("/learners/edit/submit", async (request, response) => {
+    let idFilter = { _id: new ObjectId (request.body.learnerId)};
+
+    let learner = {
+        firstName : request.body.firstName,
+        lastName : request.body.lastName,
+        email: request.body.email
+    };
+
+    await editLearner (idFilter, learner);
+
+    response.redirect(`http://localhost:5173/learnerprofilelearnerview/${request.body.learnerId}`);
 })
 
 //Mongo Functions
@@ -207,4 +250,28 @@ async function addLearner(learner) {
     db = await connection();
     var status = await db.collection("learners").insertOne(learner);
     console.log("learner added");
+}
+
+async function getSingleLearner(id){
+    db = await connection();
+    const editId = { _id: new ObjectId(id) };
+    const result = await db.collection("learners").findOne(editId);
+    console.log(result);
+    return result;
+}
+
+async function editLearner (filter, learner) {
+    db = await connection();
+
+    const updateLearner = {
+        $set: learner
+    };
+
+    await db.collection("learners").updateOne(filter, updateLearner);
+}
+
+async function deleteLearner(id){
+    db = await connection();
+    const deleteId = { _id: new ObjectId(id) };
+    const result = await db.collection("learners").deleteOne(deleteId);
 }
