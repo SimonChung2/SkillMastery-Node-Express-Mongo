@@ -54,8 +54,11 @@ app.post("/tutors/add/submit", async (request, response) => {
     let skills = request.body.skills;
     let platforms = request.body.platforms;
     let hourlyRate = request.body.hourlyRate;
+    let email = request.body.email;
+    let password = request.body.password;
+    let active = request.body.active;
 
-    let newTutor = {"firstName": firstName, "lastName": lastName, "skills": skills, "platforms": platforms, "hourlyRate": hourlyRate};
+    let newTutor = {"firstName": firstName, "lastName": lastName, "skills": skills, "platforms": platforms, "hourlyRate": hourlyRate, "email": email, "password": password, "active": active};
     await addTutor(newTutor);
     response.redirect(`http://localhost:5173/tutorprofiletutorview/${newTutor._id}`);
 })
@@ -89,7 +92,10 @@ app.post("/tutors/edit/submit", async (request, response) => {
         lastName : request.body.lastName,
         skills: request.body.skills,
         platforms: request.body.platforms,
-        hourlyRate: request.body.hourlyRate
+        hourlyRate: request.body.hourlyRate,
+        email: request.body.email,
+        password: request.body.password,
+        active: request.body.active
     };
 
     await editTutor (idFilter, tutor);
@@ -130,8 +136,10 @@ app.post("/learners/add/submit", async (request, response) => {
     let firstName =  request.body.firstName;
     let lastName = request.body.lastName;
     let email = request.body.email;
+    let password = request.body.password;
+    let active = request.body.active;
 
-    let newLearner = {"firstName": firstName, "lastName": lastName, "email": email};
+    let newLearner = {"firstName": firstName, "lastName": lastName, "email": email, "password": password, "active": active};
     await addLearner(newLearner);
     response.redirect(`http://localhost:5173/learnerprofilelearnerview/${newLearner._id}`);
 
@@ -170,7 +178,9 @@ app.post("/learners/edit/submit", async (request, response) => {
     let learner = {
         firstName : request.body.firstName,
         lastName : request.body.lastName,
-        email: request.body.email
+        email: request.body.email,
+        password: request.body.password,
+        active: request.body.active
     };
 
     await editLearner (idFilter, learner);
