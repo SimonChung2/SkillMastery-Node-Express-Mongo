@@ -25,9 +25,12 @@ app.use(cors({
 }));
 
 
-
-
 //API endpoints
+app.get("/menulinks", async (request, response) => {
+    let menulinks = await getAllMenuLinks();
+    response.json(menulinks); 
+})
+
 app.get("/tutors", async (request, response) => {
     let tutors = await getAllTutors();
     // console.log(tutors);
@@ -60,6 +63,10 @@ app.post("/tutors/add/submit", async (request, response) => {
 
     let newTutor = {"firstName": firstName, "lastName": lastName, "skills": skills, "platforms": platforms, "hourlyRate": hourlyRate, "email": email, "password": password, "active": active};
     await addTutor(newTutor);
+    await deleteTutorSignUp();
+    await deleteLearnerSignUp();
+    await changeTutorLoginToLogout();
+    await deleteLearnerLogin();
     response.redirect(`http://localhost:5173/tutorprofiletutorview/${newTutor._id}`);
 })
 
@@ -141,6 +148,10 @@ app.post("/learners/add/submit", async (request, response) => {
 
     let newLearner = {"firstName": firstName, "lastName": lastName, "email": email, "password": password, "active": active};
     await addLearner(newLearner);
+    await deleteTutorSignUp();
+    await deleteLearnerSignUp();
+    await changeTutorLoginToLogout();
+    await deleteLearnerLogin();
     response.redirect(`http://localhost:5173/learnerprofilelearnerview/${newLearner._id}`);
 
 })
@@ -188,10 +199,67 @@ app.post("/learners/edit/submit", async (request, response) => {
     response.redirect(`http://localhost:5173/learnerprofilelearnerview/${request.body.learnerId}`);
 })
 
+//Login
+app.post("/tutor/login", async (request, response) => {
+
+    let email = request.body.email;
+    let password = request.body.password;
+
+    let tutor=await tutorLogin (email, password); //checks tutors db for email and password and returns a tutor if there is a match
+    console.log(tutor);
+
+    if(tutor[0]){
+        await updateTutorStatus(tutor[0]._id);
+        await deleteTutorSignUp();
+        await deleteLearnerSignUp();
+        await changeTutorLoginToLogout();
+        await deleteLearnerLogin();
+        response.redirect(`http://localhost:5173/tutorprofiletutorview/${tutor[0]._id}`);
+    } else {
+        response.redirect('http://localhost:5173/tutor/login');
+    }
+})
+
+app.post("/learner/login", async (request, response) => {
+
+    let email = request.body.email;
+    let password = request.body.password;
+
+    let learner=await learnerLogin (email, password); //checks learners db for email and password and returns a learner if there is a match
+    console.log(learner);
+
+    if(learner[0]){
+        await updateLearnerStatus(learner[0]._id);
+        await deleteTutorSignUp();
+        await deleteLearnerSignUp();
+        await changeTutorLoginToLogout();
+        await deleteLearnerLogin();
+        response.redirect(`http://localhost:5173/learnerprofilelearnerview/${learner[0]._id}`);
+    } else {
+        response.redirect('http://localhost:5173/learner/login');
+    }
+})
+
+//Logout
+app.get("/logout", async (request, response) => {
+    await logout();
+    response.redirect('http://localhost:5173/');
+})
+
+
 //Mongo Functions
 async function connection() {
     db = client.db("skillmasterydb");
     return db;
+}
+
+//MENULINKS
+async function getAllMenuLinks() {
+    db = await connection();
+    let results = db.collection("menuLinks").find({});
+    res = await results.toArray();
+    // console.log(res);
+    return res; //returns an array of all the menuLinks as json objects
 }
 
 //TUTORS
@@ -284,4 +352,98 @@ async function deleteLearner(id){
     db = await connection();
     const deleteId = { _id: new ObjectId(id) };
     const result = await db.collection("learners").deleteOne(deleteId);
+}
+
+//Login
+async function tutorLogin (email1, password1) {
+    db = await connection();
+    let result = db.collection("tutors").find({
+        email: email1,
+        password: password1
+    });
+
+        res = await result.toArray(result); //this is an array with one tutor object in it.
+        return res;
+}
+
+async function learnerLogin (email1, password1) {
+    db = await connection();
+    let result = db.collection("learners").find({
+        email: email1,
+        password: password1
+    });
+
+        res = await result.toArray(result); //this is an array with one learner object in it.
+        return res;
+}
+
+
+async function updateTutorStatus (id) {
+    const filter = { _id: new ObjectId(id)};
+    const update = {
+        $set: {
+            active: "yes"
+        }
+    };
+
+    await db.collection("tutors").updateOne(filter, update);
+}
+
+async function updateLearnerStatus (id) {
+    const filter = { _id: new ObjectId(id)};
+    const update = {
+        $set: {
+            active: "yes"
+        }
+    };
+
+    await db.collection("learners").updateOne(filter, update);
+}
+
+async function changeTutorLoginToLogout(){
+    const linkFilter = { linkName: "Tutor Login"};
+    const linkUpdate = {
+        $set: {
+            linkName: "Logout",
+            path: "http://localhost:8888/logout"
+        }
+    };
+
+    await db.collection("menuLinks").updateOne(linkFilter, linkUpdate);
+
+}
+
+async function deleteLearnerLogin(){
+    db = await connection();
+    const result = await db.collection("menuLinks").deleteOne({"linkName" : "Learner Login"});
+}
+
+async function deleteTutorSignUp(){
+    db = await connection();
+    const result = await db.collection("menuLinks").deleteOne({"linkName" : "Tutor Sign Up"});
+}
+
+async function deleteLearnerSignUp(){
+    db = await connection();
+    const result = await db.collection("menuLinks").deleteOne({"linkName" : "Learner Sign Up"});
+}
+
+
+//Logout
+async function logout () {
+    // const linkFilter = { linkName: "Logout"};
+    // const linkUpdate = {
+    //     $set: {
+    //         linkName: "Tutor Login",
+    //         path: "/tutor/login"
+    //     }
+    // };
+
+    // await db.collection("menuLinks").updateOne(linkFilter, linkUpdate);
+    const result = await db.collection("menuLinks").deleteOne({"linkName" : "Logout"});
+
+    var status1 = await db.collection("menuLinks").insertOne({linkName: "Tutor Sign Up", path: "/tutorsignup"});
+    var status2 = await db.collection("menuLinks").insertOne({linkName: "Learner Sign Up", path: "/learnersignup"});
+    var status3 = await db.collection("menuLinks").insertOne({linkName: "Tutor Login", path: "/tutor/login"});
+    var status4 = await db.collection("menuLinks").insertOne({linkName: "Learner Login", path: "/learner/login"});
 }
