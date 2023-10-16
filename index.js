@@ -67,7 +67,7 @@ app.post("/tutors/add/submit", async (request, response) => {
     await deleteLearnerSignUp();
     await changeTutorLoginToLogout();
     await deleteLearnerLogin();
-    response.redirect(`${import.meta.env.VITE_CLIENT_URL}/tutorprofiletutorview/${newTutor._id}`);
+    response.redirect(`${process.env.VITE_CLIENT_URL}/tutorprofiletutorview/${newTutor._id}`);
 })
 
 //Delete a tutor
@@ -77,7 +77,7 @@ app.get("/tutors/delete", async (request, response) => {
     // console.log(id);
     //calls the delete Tutor function while passing in the value of tutorId
     await deleteTutor(id);
-    response.redirect(`${import.meta.env.VITE_CLIENT_URL}/tutorlist`);
+    response.redirect(`${process.env.VITE_CLIENT_URL}/tutorlist`);
 })
 
 //Edit a tutor
@@ -107,7 +107,7 @@ app.post("/tutors/edit/submit", async (request, response) => {
 
     await editTutor (idFilter, tutor);
 
-    response.redirect(`${import.meta.env.VITE_CLIENT_URL}/tutorprofiletutorview/${request.body.tutorId}`);
+    response.redirect(`${process.env.VITE_CLIENT_URL}/tutorprofiletutorview/${request.body.tutorId}`);
 })
 
 //Search tutors by skill
@@ -152,7 +152,7 @@ app.post("/learners/add/submit", async (request, response) => {
     await deleteLearnerSignUp();
     await changeTutorLoginToLogout();
     await deleteLearnerLogin();
-    response.redirect(`${import.meta.env.VITE_CLIENT_URL}/learnerprofilelearnerview/${newLearner._id}`);
+    response.redirect(`${process.env.VITE_CLIENT_URL}/learnerprofilelearnerview/${newLearner._id}`);
 
 })
 
@@ -172,7 +172,7 @@ app.get("/learners/delete", async (request, response) => {
     //calls the delete Learner function while passing in the value of learnerId
     await deleteLearner(id);
     await logout();
-    response.redirect(`${import.meta.env.VITE_CLIENT_URL}/`);
+    response.redirect(`${process.env.VITE_CLIENT_URL}/`);
 })
 
 //Edit a learner
@@ -197,7 +197,7 @@ app.post("/learners/edit/submit", async (request, response) => {
 
     await editLearner (idFilter, learner);
 
-    response.redirect(`${import.meta.env.VITE_CLIENT_URL}/learnerprofilelearnerview/${request.body.learnerId}`);
+    response.redirect(`${process.env.VITE_CLIENT_URL}/learnerprofilelearnerview/${request.body.learnerId}`);
 })
 
 //Login
@@ -215,9 +215,9 @@ app.post("/tutor/login", async (request, response) => {
         await deleteLearnerSignUp();
         await changeTutorLoginToLogout();
         await deleteLearnerLogin();
-        response.redirect(`${import.meta.env.VITE_CLIENT_URL}/tutorprofiletutorview/${tutor[0]._id}`);
+        response.redirect(`${process.env.VITE_CLIENT_URL}/tutorprofiletutorview/${tutor[0]._id}`);
     } else {
-        response.redirect(`${import.meta.env.VITE_CLIENT_URL}/tutor/login`);
+        response.redirect(`${process.env.VITE_CLIENT_URL}/tutor/login`);
     }
 })
 
@@ -235,16 +235,16 @@ app.post("/learner/login", async (request, response) => {
         await deleteLearnerSignUp();
         await changeTutorLoginToLogout();
         await deleteLearnerLogin();
-        response.redirect(`${import.meta.env.VITE_CLIENT_URL}/learnerprofilelearnerview/${learner[0]._id}`);
+        response.redirect(`${process.env.VITE_CLIENT_URL}/learnerprofilelearnerview/${learner[0]._id}`);
     } else {
-        response.redirect(`${import.meta.env.VITE_CLIENT_URL}/learner/login`);
+        response.redirect(`${process.env.VITE_CLIENT_URL}/learner/login`);
     }
 })
 
 //Logout
 app.get("/logout", async (request, response) => {
     await logout();
-    response.redirect(`${import.meta.env.VITE_CLIENT_URL}/`);
+    response.redirect(`${process.env.VITE_CLIENT_URL}/`);
 })
 
 
@@ -406,7 +406,7 @@ async function changeTutorLoginToLogout(){
     const linkUpdate = {
         $set: {
             linkName: "Logout",
-            path: `${import.meta.env.VITE_SERVER_URL}/logout`
+            path: `${process.env.VITE_SERVER_URL}/logout`
         }
     };
 
