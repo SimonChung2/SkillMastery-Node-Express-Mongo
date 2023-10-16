@@ -67,7 +67,7 @@ app.post("/tutors/add/submit", async (request, response) => {
     await deleteLearnerSignUp();
     await changeTutorLoginToLogout();
     await deleteLearnerLogin();
-    response.redirect(`http://localhost:5173/tutorprofiletutorview/${newTutor._id}`);
+    response.redirect(`${import.meta.env.VITE_CLIENT_URL}/tutorprofiletutorview/${newTutor._id}`);
 })
 
 //Delete a tutor
@@ -77,7 +77,7 @@ app.get("/tutors/delete", async (request, response) => {
     // console.log(id);
     //calls the delete Tutor function while passing in the value of tutorId
     await deleteTutor(id);
-    response.redirect(`http://localhost:5173/tutorlist`);
+    response.redirect(`${import.meta.env.VITE_CLIENT_URL}/tutorlist`);
 })
 
 //Edit a tutor
@@ -107,7 +107,7 @@ app.post("/tutors/edit/submit", async (request, response) => {
 
     await editTutor (idFilter, tutor);
 
-    response.redirect(`http://localhost:5173/tutorprofiletutorview/${request.body.tutorId}`);
+    response.redirect(`${import.meta.env.VITE_CLIENT_URL}/tutorprofiletutorview/${request.body.tutorId}`);
 })
 
 //Search tutors by skill
@@ -152,7 +152,7 @@ app.post("/learners/add/submit", async (request, response) => {
     await deleteLearnerSignUp();
     await changeTutorLoginToLogout();
     await deleteLearnerLogin();
-    response.redirect(`http://localhost:5173/learnerprofilelearnerview/${newLearner._id}`);
+    response.redirect(`${import.meta.env.VITE_CLIENT_URL}/learnerprofilelearnerview/${newLearner._id}`);
 
 })
 
@@ -171,7 +171,8 @@ app.get("/learners/delete", async (request, response) => {
     // console.log(id);
     //calls the delete Learner function while passing in the value of learnerId
     await deleteLearner(id);
-    response.redirect(`http://localhost:5173/admin/learnerlist`);
+    await logout();
+    response.redirect(`${import.meta.env.VITE_CLIENT_URL}/`);
 })
 
 //Edit a learner
@@ -196,7 +197,7 @@ app.post("/learners/edit/submit", async (request, response) => {
 
     await editLearner (idFilter, learner);
 
-    response.redirect(`http://localhost:5173/learnerprofilelearnerview/${request.body.learnerId}`);
+    response.redirect(`${import.meta.env.VITE_CLIENT_URL}/learnerprofilelearnerview/${request.body.learnerId}`);
 })
 
 //Login
@@ -214,9 +215,9 @@ app.post("/tutor/login", async (request, response) => {
         await deleteLearnerSignUp();
         await changeTutorLoginToLogout();
         await deleteLearnerLogin();
-        response.redirect(`http://localhost:5173/tutorprofiletutorview/${tutor[0]._id}`);
+        response.redirect(`${import.meta.env.VITE_CLIENT_URL}/tutorprofiletutorview/${tutor[0]._id}`);
     } else {
-        response.redirect('http://localhost:5173/tutor/login');
+        response.redirect(`${import.meta.env.VITE_CLIENT_URL}/tutor/login`);
     }
 })
 
@@ -234,16 +235,16 @@ app.post("/learner/login", async (request, response) => {
         await deleteLearnerSignUp();
         await changeTutorLoginToLogout();
         await deleteLearnerLogin();
-        response.redirect(`http://localhost:5173/learnerprofilelearnerview/${learner[0]._id}`);
+        response.redirect(`${import.meta.env.VITE_CLIENT_URL}/learnerprofilelearnerview/${learner[0]._id}`);
     } else {
-        response.redirect('http://localhost:5173/learner/login');
+        response.redirect(`${import.meta.env.VITE_CLIENT_URL}/learner/login`);
     }
 })
 
 //Logout
 app.get("/logout", async (request, response) => {
     await logout();
-    response.redirect('http://localhost:5173/');
+    response.redirect(`${import.meta.env.VITE_CLIENT_URL}/`);
 })
 
 
@@ -405,7 +406,7 @@ async function changeTutorLoginToLogout(){
     const linkUpdate = {
         $set: {
             linkName: "Logout",
-            path: "http://localhost:8888/logout"
+            path: `${import.meta.env.VITE_SERVER_URL}/logout`
         }
     };
 
@@ -431,6 +432,7 @@ async function deleteLearnerSignUp(){
 
 //Logout
 async function logout () {
+    db=await connection();
     // const linkFilter = { linkName: "Logout"};
     // const linkUpdate = {
     //     $set: {
