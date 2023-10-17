@@ -195,7 +195,7 @@ app.post("/learners/edit/submit", async (request, response) => {
         active: request.body.active
     };
 
-    await editLearner (idFilter, learner);
+    await editLearner (idFilter, learner); //calls mongodb function
 
     response.redirect(`${process.env.VITE_CLIENT_URL}/learnerprofilelearnerview/${request.body.learnerId}`);
 })
