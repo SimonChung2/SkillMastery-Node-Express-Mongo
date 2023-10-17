@@ -70,7 +70,34 @@ app.post("/tutors/add/submit", async (request, response) => {
     response.redirect(`${process.env.VITE_CLIENT_URL}/tutorprofiletutorview/${newTutor._id}`);
 })
 
+app.post("/admin/tutors/add/submit", async (request, response) => {
+
+    let firstName =  request.body.firstName;
+    let lastName = request.body.lastName;
+    let skills = request.body.skills;
+    let platforms = request.body.platforms;
+    let hourlyRate = request.body.hourlyRate;
+    let email = request.body.email;
+    let password = request.body.password;
+    let active = request.body.active;
+
+    let newTutor = {"firstName": firstName, "lastName": lastName, "skills": skills, "platforms": platforms, "hourlyRate": hourlyRate, "email": email, "password": password, "active": active};
+    await addTutor(newTutor);
+
+    response.redirect(`${process.env.VITE_CLIENT_URL}/admin/tutorlist`);
+})
+
 //Delete a tutor
+app.get("/admin/tutors/delete", async (request, response) => {
+    //get tutorId value and save to variable called id
+    let id = request.query.tutorId;
+    // console.log(id);
+    //calls the delete Tutor function while passing in the value of tutorId
+    await deleteTutor(id);
+    response.redirect(`${process.env.VITE_CLIENT_URL}/admin/tutorlist`);
+})
+
+//Delete a tutor from Admin Dashboard
 app.get("/tutors/delete", async (request, response) => {
     //get tutorId value and save to variable called id
     let id = request.query.tutorId;
@@ -108,6 +135,25 @@ app.post("/tutors/edit/submit", async (request, response) => {
     await editTutor (idFilter, tutor);
 
     response.redirect(`${process.env.VITE_CLIENT_URL}/tutorprofiletutorview/${request.body.tutorId}`);
+})
+//Edit Tutor form Admin Dashboard
+app.post("/admin/tutors/edit/submit", async (request, response) => {
+    let idFilter = { _id: new ObjectId (request.body.tutorId)};
+
+    let tutor = {
+        firstName : request.body.firstName,
+        lastName : request.body.lastName,
+        skills: request.body.skills,
+        platforms: request.body.platforms,
+        hourlyRate: request.body.hourlyRate,
+        email: request.body.email,
+        password: request.body.password,
+        active: request.body.active
+    };
+
+    await editTutor (idFilter, tutor);
+
+    response.redirect(`${process.env.VITE_CLIENT_URL}/admin/tutorlist`);
 })
 
 //Search tutors by skill
@@ -200,7 +246,7 @@ app.post("/learners/edit/submit", async (request, response) => {
     response.redirect(`${process.env.VITE_CLIENT_URL}/learnerprofilelearnerview/${request.body.learnerId}`);
 })
 
-//Login
+//LOGIN
 app.post("/tutor/login", async (request, response) => {
 
     let email = request.body.email;
@@ -215,6 +261,8 @@ app.post("/tutor/login", async (request, response) => {
         await deleteLearnerSignUp();
         await changeTutorLoginToLogout();
         await deleteLearnerLogin();
+        await deleteAdminLogin();
+
         response.redirect(`${process.env.VITE_CLIENT_URL}/tutorprofiletutorview/${tutor[0]._id}`);
     } else {
         response.redirect(`${process.env.VITE_CLIENT_URL}/tutor/login`);
@@ -235,9 +283,32 @@ app.post("/learner/login", async (request, response) => {
         await deleteLearnerSignUp();
         await changeTutorLoginToLogout();
         await deleteLearnerLogin();
+        await deleteAdminLogin();
+
         response.redirect(`${process.env.VITE_CLIENT_URL}/learnerprofilelearnerview/${learner[0]._id}`);
     } else {
         response.redirect(`${process.env.VITE_CLIENT_URL}/learner/login`);
+    }
+})
+
+app.post("/admin/login", async (request, response) => {
+
+    let email = request.body.email;
+    let password = request.body.password;
+
+    let admin=await adminLogin (email, password); //checks admin db for email and password and returns an admin if there is a match
+    console.log(admin);
+
+    if(admin[0]){
+
+        await deleteTutorSignUp();
+        await deleteLearnerSignUp();
+        await changeTutorLoginToLogout();
+        await deleteLearnerLogin();
+        await deleteAdminLogin();
+        response.redirect(`${process.env.VITE_CLIENT_URL}/admin/tutorlist`);
+    } else {
+        response.redirect(`${process.env.VITE_CLIENT_URL}/admin/login`);
     }
 })
 
@@ -378,6 +449,17 @@ async function learnerLogin (email1, password1) {
         return res;
 }
 
+async function adminLogin (email1, password1) {
+    db = await connection();
+    let result = db.collection("admins").find({
+        email: email1,
+        password: password1
+    });
+
+        res = await result.toArray(result); //this is an array with one learner object in it.
+        return res;
+}
+
 
 async function updateTutorStatus (id) {
     const filter = { _id: new ObjectId(id)};
@@ -419,6 +501,11 @@ async function deleteLearnerLogin(){
     const result = await db.collection("menuLinks").deleteOne({"linkName" : "Learner Login"});
 }
 
+async function deleteAdminLogin(){
+    db = await connection();
+    const result = await db.collection("menuLinks").deleteOne({"linkName" : "Admin Login"});
+}
+
 async function deleteTutorSignUp(){
     db = await connection();
     const result = await db.collection("menuLinks").deleteOne({"linkName" : "Tutor Sign Up"});
@@ -448,4 +535,6 @@ async function logout () {
     var status2 = await db.collection("menuLinks").insertOne({linkName: "Learner Sign Up", path: "/learnersignup"});
     var status3 = await db.collection("menuLinks").insertOne({linkName: "Tutor Login", path: "/tutor/login"});
     var status4 = await db.collection("menuLinks").insertOne({linkName: "Learner Login", path: "/learner/login"});
+    var status4 = await db.collection("menuLinks").insertOne({linkName: "Admin Login", path: "/admin/login"});
+
 }
