@@ -223,6 +223,16 @@ app.get("/learners/delete", async (request, response) => {
     response.redirect(`${process.env.VITE_CLIENT_URL}/`);
 })
 
+//Delete a learner from Admin Dashboard
+app.get("admin/learners/delete", async (request, response) => {
+    //get learnerId value and save to variable called id
+    let id = request.query.learnerId;
+    // console.log(id);
+    //calls the delete Tutor function while passing in the value of tutorId
+    await deleteLearner(id);
+    response.redirect(`${process.env.VITE_CLIENT_URL}/tutorlist`);
+})
+
 //Edit a learner
 app.get("/learners/edit", async (request, response) => {
     if (request.query.learnerId) {
