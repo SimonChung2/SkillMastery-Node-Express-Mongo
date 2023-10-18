@@ -224,7 +224,7 @@ app.get("/learners/delete", async (request, response) => {
 })
 
 //Delete a learner from Admin Dashboard
-app.get("admin/learners/delete", async (request, response) => {
+app.get("/admin/learners/delete", async (request, response) => {
     //get learnerId value and save to variable called id
     let id = request.query.learnerId;
     // console.log(id);
