@@ -230,7 +230,7 @@ app.get("/admin/learners/delete", async (request, response) => {
     // console.log(id);
     //calls the delete Tutor function while passing in the value of tutorId
     await deleteLearner(id);
-    response.redirect(`${process.env.VITE_CLIENT_URL}/tutorlist`);
+    response.redirect(`${process.env.VITE_CLIENT_URL}/admin/tutorlist`);
 })
 
 //Edit a learner
