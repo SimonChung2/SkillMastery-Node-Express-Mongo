@@ -203,6 +203,21 @@ app.post("/learners/add/submit", async (request, response) => {
     response.redirect(`${process.env.VITE_CLIENT_URL}/learnerprofilelearnerview/${newLearner._id}`);
 
 })
+//Add learner from admin dashboard
+app.post("/admin/learners/add/submit", async (request, response) => {
+
+    let firstName =  request.body.firstName;
+    let lastName = request.body.lastName;
+    let email = request.body.email;
+    let password = request.body.password;
+    let active = request.body.active;
+
+    let newLearner = {"firstName": firstName, "lastName": lastName, "email": email, "password": password, "active": active};
+    await addLearner(newLearner);
+
+    response.redirect(`${process.env.VITE_CLIENT_URL}/admin/tutorlist`);
+
+})
 
 //View learner profile
 app.get("/learnerprofilelearnerview", async (request, response) => {
