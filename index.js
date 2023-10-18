@@ -88,7 +88,7 @@ app.post("/admin/tutors/add/submit", async (request, response) => {
     response.redirect(`${process.env.VITE_CLIENT_URL}/admin/tutorlist`);
 })
 
-//Delete a tutor
+//Delete a tutor from Admin Dashboard
 app.get("/admin/tutors/delete", async (request, response) => {
     //get tutorId value and save to variable called id
     let id = request.query.tutorId;
@@ -98,7 +98,7 @@ app.get("/admin/tutors/delete", async (request, response) => {
     response.redirect(`${process.env.VITE_CLIENT_URL}/admin/tutorlist`);
 })
 
-//Delete a tutor from Admin Dashboard
+//Delete a tutor 
 app.get("/tutors/delete", async (request, response) => {
     //get tutorId value and save to variable called id
     let id = request.query.tutorId;
