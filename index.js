@@ -67,6 +67,7 @@ app.post("/tutors/add/submit", async (request, response) => {
     await deleteLearnerSignUp();
     await changeTutorLoginToLogout();
     await deleteLearnerLogin();
+    await deleteAdminLogin();
     response.redirect(`${process.env.VITE_CLIENT_URL}/tutorprofiletutorview/${newTutor._id}`);
 })
 
@@ -198,6 +199,7 @@ app.post("/learners/add/submit", async (request, response) => {
     await deleteLearnerSignUp();
     await changeTutorLoginToLogout();
     await deleteLearnerLogin();
+    await deleteAdminLogin();
     response.redirect(`${process.env.VITE_CLIENT_URL}/learnerprofilelearnerview/${newLearner._id}`);
 
 })
