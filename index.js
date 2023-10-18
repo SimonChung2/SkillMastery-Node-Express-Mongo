@@ -273,6 +273,22 @@ app.post("/learners/edit/submit", async (request, response) => {
     response.redirect(`${process.env.VITE_CLIENT_URL}/learnerprofilelearnerview/${request.body.learnerId}`);
 })
 
+app.post("/admin/learners/edit/submit", async (request, response) => {
+    let idFilter = { _id: new ObjectId (request.body.learnerId)};
+
+    let learner = {
+        firstName : request.body.firstName,
+        lastName : request.body.lastName,
+        email: request.body.email,
+        password: request.body.password,
+        active: request.body.active
+    };
+
+    await editLearner (idFilter, learner); //calls mongodb function
+
+    response.redirect(`${process.env.VITE_CLIENT_URL}/admin/tutorlist`);
+})
+
 //LOGIN
 app.post("/tutor/login", async (request, response) => {
 
@@ -547,15 +563,7 @@ async function deleteLearnerSignUp(){
 //Logout
 async function logout () {
     db=await connection();
-    // const linkFilter = { linkName: "Logout"};
-    // const linkUpdate = {
-    //     $set: {
-    //         linkName: "Tutor Login",
-    //         path: "/tutor/login"
-    //     }
-    // };
 
-    // await db.collection("menuLinks").updateOne(linkFilter, linkUpdate);
     const result = await db.collection("menuLinks").deleteOne({"linkName" : "Logout"});
 
     var status1 = await db.collection("menuLinks").insertOne({linkName: "Tutor Sign Up", path: "/tutorsignup"});
