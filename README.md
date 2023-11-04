@@ -1,6 +1,6 @@
 # SkillMastery Express API
 
-SkillMastery Express API is a server-side application built with Express.js for handling various operations related to tutors, learners, and menu links. It is designed to work in conjunction with a front-end client and a MongoDB database.
+SkillMastery Express API is a server-side application built with Express.js for handling various operations related to tutors, learners, and admins. It is designed to work in conjunction with a React front-end and a MongoDB database.
 
 ## Getting Started
 
