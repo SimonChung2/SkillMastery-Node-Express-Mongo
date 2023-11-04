@@ -8,7 +8,7 @@ To get started with this project, you should follow these steps:
 
 1. **Clone the repository:** 
 
-git clone https://github.com/YourUsername/SkillMastery-Express-API.git
+git clone [https://github.com/YourUsername/SkillMastery-Express-API.git](https://github.com/SimonChung2/SkillMastery-Node-Express-Mongo.git)
 
 
 2. **Install the required dependencies:**
