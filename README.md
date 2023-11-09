@@ -26,9 +26,9 @@ VITE_CLIENT_URL=your_client_url
 VITE_SERVER_URL=your_server_url
 
 
-4. **Start the server:**
+4. **Run the server:**
 
-npm start
+npm run dev
 
 
 ## Features
